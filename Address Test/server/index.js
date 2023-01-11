@@ -30,12 +30,16 @@ app.post("/addAddress", (req, res)=>{
     User.findOne({_id : userId})
     .then(data=>{
         data.addresses.push(addressObj); 
-        res.json({
-            status : 200, 
-            success : true, 
-            message : "Address added successfully", 
-            data : data
+        data.save()
+        .then(val=>{
+            res.json({
+                status : 200, 
+                success : true, 
+                message : "Address added successfully", 
+                data : val
+            })
         })
+        
     })
     .catch(err=>{
         res.json({
