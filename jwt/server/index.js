@@ -21,13 +21,6 @@ app.get("/", (req, res) => {
     })
 })
 
-// app.post("/register", (req, res)=> {
-//     if(!req.body){
-//         data.email = req.body.email; 
-//         data.password = req.body.password;
-//     }
-// })
-
 app.post("/login", (req, res)=> {
     if(data.email === req.body.email && data.password === req.body.password){
         jwt.verify(token, "this is the private key", function(err, decode){        
