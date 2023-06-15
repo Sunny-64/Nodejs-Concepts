@@ -1,0 +1,11 @@
+Hello world let's go to the nextline
+This is the next line, 
+I'm studying streams in nodejs right now, 
+I'm really sleepy 
+how does the stream works anyways 
+who knows 
+Okay add more data
+let's see if it's real time or not
+hello world
+
+np not real time
