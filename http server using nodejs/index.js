@@ -24,7 +24,11 @@ const server = http.createServer((req, res) => {
     }
     else if(req.url === "/task/add"){
         res.write("Add task from this route");
-        res.end(); 
+//	console.log(req)
+       // res.end(JSON.stringfy({1 : "hello world"}));
+	   let data = {key1 : "hello", key2 : "world"};
+	   // let payload = JSON.stringify(req); 
+	  res.end();
     }
 
     else if(req.url === "/tasks"){
@@ -49,8 +53,7 @@ const server = http.createServer((req, res) => {
         res.write("</table>");
         res.end(); 
     }
-    else if(req.url === "/task/delete/:id"){
-        let a = tasks.find(req)
+    else if(req.url === "/task/delete?id"){
         res.write("Delete Task from here"); 
     }
     else {
