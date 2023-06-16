@@ -13,19 +13,20 @@ const socket = new Server(httpServer, {
 const cors = require("cors");
 app.use(cors());
 
+let messages = []; 
+
 app.get("/", (req, res) => {
   res.json({ status: 200, success: true, message: "Home Route" });
 });
 
 socket.on("connection", (s) => {
-    console.log("Connected: ", s.id);
 
-    socket.on("msg", (data, id) => {
-        console.log("hiiii : ", id)
+    s.on("msg", (data) => {
+        messages.push(data);
 
-        console.log("msg received :", data);
-    }); 
+        socket.emit("getMessages",messages);
 
+    })
     s.on("disconnect", () => {
       console.log("Disconnected: ", s.id);
     });

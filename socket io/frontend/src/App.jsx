@@ -3,31 +3,46 @@ import './App.css'
 import { io } from "socket.io-client";
 
 function App() {
-  const [msg, setMsg] = useState(""); 
-  const socket = useRef();  
+  const [msg, setMsg] = useState("");
+  const [messages, setMessages] = useState(null);
+  const socket = useRef();
+
   useEffect(() => {
-    socket.current = io("ws://localhost:3000"); 
+    socket.current = io("http://localhost:3000", { transports: ["websocket"] });
+    socket.current.on("getMessages", (m) => {
+      setMessages(m)
+    })
   }, []);
 
-  const sendMsg = async(event) => {
+  const sendMsg = (event) => {
     event.preventDefault();
-    await socket.current.emit("msg", msg);
+    console.log(socket.current.emit("msg", msg));
     setMsg("");
   }
+
+  console.log(messages)
   return (
-      <div className="container">
-          <div className="msgs-container">
-            {/* <div className="others-msg">left</div>
+    <>
+    <h1>Chat System</h1>
+    <div className="container">
+      <div className="msgs-container">
+        {/* <div className="others-msg">left</div>
             <div className="my-msg">right</div> */}
-            <div className="msgs">
-              hello
-            </div>
-          </div>
-          <div className="inputs" >
-              <input type="text" name="msg" value={msg} id="msg" onChange={(e) => setMsg(e.target.value)}/>
-              <button onClick={sendMsg}>Send</button>
-          </div>
+        <div className="msgs">
+          {messages?.map((m, index) => {
+            return <p className='singleMsg' key={index}>{m}</p>
+          })}
+        </div>
+
+        <form className="inputs"  onSubmit={sendMsg} >
+          <input type="text" name="msg" value={msg} id="msg" onChange={(e) => setMsg(e.target.value)} />
+          <button type='submit'>Send</button>
+        </form>
+
       </div>
+
+    </div>
+    </>
   )
 }
 
