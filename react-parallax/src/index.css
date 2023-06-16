@@ -1,0 +1,30 @@
+*{
+    margin : 0; 
+    padding : 0; 
+    box-sizing: border-box;
+}
+
+body{
+    overflow-x: hidden;
+}
+
+.page1, .page2, .page3, .page4{
+    height : 100vh; 
+    width : 100vw; 
+}
+
+.page1{
+    background: #000;
+}
+
+.page2{
+    background-color: darkgreen;
+}
+
+.page3{
+    background-color: darkgoldenrod;
+}
+
+.page4{
+    background-color: darkmagenta;
+}
