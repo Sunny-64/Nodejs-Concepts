@@ -25,6 +25,7 @@ function App() {
     <>
     <h1>Chat System</h1>
     <div className="container">
+    <div className="rgb-strip"></div>
       <div className="msgs-container">
         {/* <div className="others-msg">left</div>
             <div className="my-msg">right</div> */}
