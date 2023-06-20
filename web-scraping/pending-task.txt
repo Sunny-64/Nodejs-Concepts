@@ -1,0 +1,1 @@
+Get the data of the entire page. Website has infinite scroll loader so only limited data is fetched. 
