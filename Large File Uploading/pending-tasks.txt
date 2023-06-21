@@ -1,0 +1,4 @@
+1. writing chunks in a file using parallel processing logic. 
+2. create specific folder for specific files. 
+3. add upload file functionality. (make the entire process dynamic)
+

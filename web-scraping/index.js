@@ -3,7 +3,10 @@ const cheerio = require("cheerio");
 const axios = require("axios"); 
 const fs = require("fs"); 
 const fsPromises = require("fs/promises"); 
+const cors = require("cors"); 
 const app = express(); 
+
+app.use(cors()); 
 
 const scrapeData = async () => {
     // set the base url and the url of the page.
@@ -38,7 +41,7 @@ const scrapeData = async () => {
             // store everything in one pleace
             const propertyObj = {
                 title : title, 
-                url : url, 
+                url : `${URL}${url}`, 
                 address : address, 
                 propertyAge : propertyAge
             }
@@ -53,7 +56,6 @@ const scrapeData = async () => {
     catch(error){
         console.log(error); 
     }
-   
 }
 
 const getPropertyAge = async (url) => {
