@@ -28,35 +28,74 @@ const fsPromises = require("fs/promises");
 const fs = require("fs"); 
 const cors = require("cors"); 
 const app = express(); 
+const path = require("path"); 
+const { log } = require("console");
+
 
 app.use(cors({origin : "*"}));
 
 app.get("/", (req, res) => {
     res.send("hi")
 })
+
+let fd = 0;
+let chunkCount = 0; 
+
+(async() => {
+    fd = await fsPromises.open("sonny.txt", "w"); 
+})();
+
+
 app.post("/:filename", async (req, res) => {
-    try{
-        console.log(req.body); 
-        const {filename} = req.params.filename; 
+    const totalChunks = req.header('X-TOTAL-CHUNKS')
+    // console.log(totalChunks);
+    // console.time("Sonny");
+    // const {filename} = req.params;
+    // console.log(filename); 
+    // try{
+        req.on("data", async (chunk) => {
+            // console.log(chunk.toString())
+            // console.log("----------------------------------------------------------------------------------------------------")
+            // console.log(chunk.toString())
+            // const filePath = path.join(__dirname + `/files/${filename}.txt`);
+            // console.log(filePath); 
+            // const writeStream =  fs.createWriteStream(filePath, {flags : "a"}); 
+            let buffer = chunk.toString();
+            // writeStream.write(chunk); 
+            // writeStream.end(); 
+            // writeStream.on("error", (e) => {
+            //     console.log(e); 
+            //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
+            // });
 
-        // const {chunk} = req.body; 
+            await fsPromises.appendFile(fd, chunk); 
+            // console.timeEnd("Sonny");
+        }); 
 
-        // console.log(filename + "-> ", chunk); 
-        // const path = path.join(__dirname + `/files/${filename}.txt`);
-        // const writeStream =  fs.createWriteStream(path, {flags : "a"}); 
-        // writeStream.write(chunk); 
-        // writeStream.end(); 
-        // writeStream.on("error", (e) => {
-        //     console.log(e); 
-        //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
-        // })
-        // res.status(200).json({status : 200, success : true, message : "Chunk added successfully"}); 
-    }
-    catch(error){
-        console.log(error); 
-        res.status(500).json({status : 500, success : false, message : "internal server error"});     
-    }
+        req.on("end", async () => {
+
+            // if(!err){
+                chunkCount++; 
+                res.status(200).json({status : 200, success : true, message : "Chunk added successfully"});   
+            // }
+            // else{
+            //      res.status(500).json({status : 500, success : false, message : "internal server error"});     
+            // }
+            console.log(chunkCount);
+            if(chunkCount == totalChunks){
+                await fd.close(); 
+                console.log("file closed"); 
+                return; 
+            }
+        });
+       
+    // }
+    // catch(error){
+    //     console.log(error); 
+    //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
+    // }
 })
 
 app.listen(3000, () => console.log("SERVER RUNNING ON PORT : 3000")); 
+
 
