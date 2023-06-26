@@ -46,8 +46,8 @@ let chunkCount = 0;
 })();
 
 
-app.post("/:filename", async (req, res) => {
-    const totalChunks = req.header('X-TOTAL-CHUNKS')
+app.post("/", async (req, res) => {
+    // const totalChunks = req.header('X-TOTAL-CHUNKS')
     // console.log(totalChunks);
     // console.time("Sonny");
     // const {filename} = req.params;
@@ -60,14 +60,14 @@ app.post("/:filename", async (req, res) => {
             // const filePath = path.join(__dirname + `/files/${filename}.txt`);
             // console.log(filePath); 
             // const writeStream =  fs.createWriteStream(filePath, {flags : "a"}); 
-            let buffer = chunk.toString();
+            // let buffer = chunk.toString();
             // writeStream.write(chunk); 
             // writeStream.end(); 
             // writeStream.on("error", (e) => {
             //     console.log(e); 
             //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
             // });
-
+            console.log(chunk); 
             await fsPromises.appendFile(fd, chunk); 
             // console.timeEnd("Sonny");
         }); 
@@ -75,18 +75,18 @@ app.post("/:filename", async (req, res) => {
         req.on("end", async () => {
 
             // if(!err){
-                chunkCount++; 
+                // chunkCount++; 
                 res.status(200).json({status : 200, success : true, message : "Chunk added successfully"});   
             // }
             // else{
             //      res.status(500).json({status : 500, success : false, message : "internal server error"});     
             // }
-            console.log(chunkCount);
-            if(chunkCount == totalChunks){
-                await fd.close(); 
-                console.log("file closed"); 
-                return; 
-            }
+            // console.log(chunkCount);
+            // if(chunkCount == totalChunks){
+            //     await fd.close(); 
+            //     console.log("file closed"); 
+            //     return; 
+            // }
         });
        
     // }
