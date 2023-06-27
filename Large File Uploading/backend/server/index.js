@@ -1,3 +1,72 @@
+const express = require("express");
+const fsPromises = require("fs/promises");
+const fs = require("fs");
+const cors = require("cors");
+const app = express();
+const path = require("path");
+
+app.use(cors({ origin: "*" }));
+
+if (!fs.existsSync(path.join(__dirname + `/uploads`))) {
+    fs.mkdirSync(path.join(__dirname + `/uploads`));
+}
+
+let fd = 0;
+let chunkCount = 0;
+
+
+app.post("/upload/:filename", async (req, res) => {
+  const { filename } = req.params;
+
+  try {
+    if (!fs.existsSync(path.join(__dirname + `/uploads/${filename}`))) {
+      fs.mkdirSync(path.join(__dirname + `/uploads/${filename}`));
+    }
+    // fd = await fsPromises.open(path.join(__dirname + `/uploads/${filename}/${filename}`), "a"); 
+    req.on("data", async (data) => {
+      let chunk = data;
+      chunkCount++;
+      console.log("chunks sent : ", chunkCount);
+    //   fd.appendFile(chunk);
+       await fsPromises.appendFile(path.join(__dirname + `/uploads/${filename}/${filename}`), data); 
+    });
+
+    req.on("end", async (data) => {
+      // append any data that's left
+        if(data){
+            await fsPromises.appendFile(path.join(__dirname + `/uploads/${filename}/${filename}`), data); 
+        }
+      console.log("file uploaded");
+
+      // close the file
+    //   await fd.close();
+      console.log("file closed");
+    });
+
+    req.on("error", (error) => {
+        console.log(error);
+        return req.status(400).json({message : "error : " + error.message});  
+    })
+
+    res.status(200).json({
+      status: 200,
+      success: true,
+      message: `chunks received : ${chunkCount}`,
+    });
+
+  } catch (error) {
+    // console.log(error.message);
+    return res.status(500).json({
+      status: 500,
+      success: false,
+      message: "error while creating folder",
+      error: error.message,
+    });
+  }
+});
+
+app.listen(3000, () => console.log("SERVER RUNNING ON PORT : 3000"));
+
 /*
 implement file uploader: 
 
@@ -21,81 +90,3 @@ if file_size >100MB  use 4 parallel chunks
 if file_size >1GB  use 6 parallel chunks
 
 */
-
-
-const express = require("express"); 
-const fsPromises = require("fs/promises"); 
-const fs = require("fs"); 
-const cors = require("cors"); 
-const app = express(); 
-const path = require("path"); 
-const { log } = require("console");
-
-
-app.use(cors({origin : "*"}));
-
-app.get("/", (req, res) => {
-    res.send("hi")
-})
-
-let fd = 0;
-let chunkCount = 0; 
-
-(async() => {
-    fd = await fsPromises.open("sonny.txt", "w"); 
-})();
-
-
-app.post("/", async (req, res) => {
-    // const totalChunks = req.header('X-TOTAL-CHUNKS')
-    // console.log(totalChunks);
-    // console.time("Sonny");
-    // const {filename} = req.params;
-    // console.log(filename); 
-    // try{
-        req.on("data", async (chunk) => {
-            // console.log(chunk.toString())
-            // console.log("----------------------------------------------------------------------------------------------------")
-            // console.log(chunk.toString())
-            // const filePath = path.join(__dirname + `/files/${filename}.txt`);
-            // console.log(filePath); 
-            // const writeStream =  fs.createWriteStream(filePath, {flags : "a"}); 
-            // let buffer = chunk.toString();
-            // writeStream.write(chunk); 
-            // writeStream.end(); 
-            // writeStream.on("error", (e) => {
-            //     console.log(e); 
-            //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
-            // });
-            console.log(chunk); 
-            await fsPromises.appendFile(fd, chunk); 
-            // console.timeEnd("Sonny");
-        }); 
-
-        req.on("end", async () => {
-
-            // if(!err){
-                // chunkCount++; 
-                res.status(200).json({status : 200, success : true, message : "Chunk added successfully"});   
-            // }
-            // else{
-            //      res.status(500).json({status : 500, success : false, message : "internal server error"});     
-            // }
-            // console.log(chunkCount);
-            // if(chunkCount == totalChunks){
-            //     await fd.close(); 
-            //     console.log("file closed"); 
-            //     return; 
-            // }
-        });
-       
-    // }
-    // catch(error){
-    //     console.log(error); 
-    //     res.status(500).json({status : 500, success : false, message : "internal server error"});     
-    // }
-})
-
-app.listen(3000, () => console.log("SERVER RUNNING ON PORT : 3000")); 
-
-

@@ -36,37 +36,23 @@
 // })();
 
 
-const fs = require("fs");
 
-const file = fs.createWriteStream("file.txt");
-console.time();
+// let test = document.getElementById("test"); 
+// test.addEventListener("click", async (e) => {
+//   e.preventDefault(); 
+//   console.log("hi")
+//   try{
+//     const res = await axios.post("http://localhost:3000/folder/hi"); 
+//     console.log(res); 
+//     if(res.status == 200){
+//       console.log("folder created"); 
+//     }
+//     else{
+//       console.log("failure");
+//     }
+// } 
+// catch(error){
+//   console.log(error.message); 
+// } 
+// })
 
-let i = 0;
-
-const writeIt = () => {
-  let canContinueWriting = true;
-
-  while (i < 10000000000 && canContinueWriting) {
-    const buff = Buffer.from(`${i} `, "utf-8");
-    if (i === 9999999999) {
-      file.end(buff);
-    } else {
-      canContinueWriting = file.write(buff);
-    }
-    i++;
-  }
-
-  if (i === 1000000) {
-    file.end();
-  }
-};
-
-file.on("drain", () => {
-  writeIt();
-});
-
-file.on("finish", () => {
-  console.timeEnd();
-});
-
-writeIt();
